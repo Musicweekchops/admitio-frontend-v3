@@ -1,6 +1,10 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
 
+// Credenciales manuales para el super owner
+const MANUAL_SUPEROWNER_EMAIL = 'admin@admitio.cl';
+const MANUAL_SUPEROWNER_PASSWORD = '123456admin';
+
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
@@ -17,7 +21,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Cargar usuario al iniciar
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -28,7 +31,6 @@ export const AuthProvider = ({ children }) => {
           setUser(savedUser);
           setTenant(savedTenant);
           
-          // Verificar que el token siga válido
           try {
             const response = await authAPI.me();
             setUser(response.user);
@@ -36,7 +38,6 @@ export const AuthProvider = ({ children }) => {
               setTenant(response.tenant);
             }
           } catch (e) {
-            // Token inválido, limpiar
             authAPI.logout();
             setUser(null);
             setTenant(null);
@@ -69,11 +70,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Login admin (Super Owner)
+  // Login admin (Super Owner) con credenciales manuales
   const adminLogin = async (email, password) => {
     setError(null);
     setLoading(true);
     try {
+      // Verificar credenciales manuales primero
+      if (email === MANUAL_SUPEROWNER_EMAIL && password === MANUAL_SUPEROWNER_PASSWORD) {
+        const manualSuperowner = {
+          user: {
+            id: 'manual-superowner',
+            email: MANUAL_SUPEROWNER_EMAIL,
+            rol: 'super_owner',
+            name: 'Super Owner Manual',
+          },
+          tenant: null
+        };
+        setUser(manualSuperowner.user);
+        setTenant(null);
+        return manualSuperowner;
+      }
+
+      // Si no son manuales, sigue con el API normal
       const response = await authAPI.adminLogin(email, password);
       setUser(response.user);
       setTenant(null);
@@ -86,7 +104,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout
   const logout = () => {
     authAPI.logout();
     setUser(null);

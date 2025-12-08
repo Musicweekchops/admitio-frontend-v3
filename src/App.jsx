@@ -1,82 +1,99 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Pages
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Verificar from './pages/Verificar';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import CambiarPassword from './pages/CambiarPassword';
+import Usuarios from './pages/Usuarios';
 
-// Componente para rutas protegidas
+// Loading spinner
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="w-10 h-10 border-4 border-violet-600 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
+
+// Ruta protegida para usuarios autenticados
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, debeCambiarPassword, isSuperOwner } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="w-12 h-12 mx-auto mb-4 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
-          <p className="text-slate-600">Cargando...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Si debe cambiar contraseña, redirigir
+  if (debeCambiarPassword) {
+    return <Navigate to="/cambiar-password" replace />;
   }
 
   return children;
 };
 
-// Componente para rutas de admin
+// Ruta protegida para Super Owners
 const AdminRoute = ({ children }) => {
-  const { isAuthenticated, isSuperOwner, loading } = useAuth();
+  const { isAuthenticated, loading, isSuperOwner } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="w-12 h-12 mx-auto mb-4 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
-          <p className="text-slate-600">Cargando...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isSuperOwner()) {
+  if (!isSuperOwner) {
     return <Navigate to="/dashboard" replace />;
   }
 
   return children;
 };
 
-// Redirigir si ya está autenticado
+// Ruta pública (redirige si ya está autenticado)
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated, isSuperOwner, loading } = useAuth();
+  const { isAuthenticated, loading, isSuperOwner, debeCambiarPassword } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="w-12 h-12 mx-auto mb-4 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
-          <p className="text-slate-600">Cargando...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (isAuthenticated) {
-    return <Navigate to={isSuperOwner() ? '/admin' : '/dashboard'} replace />;
+    if (debeCambiarPassword) {
+      return <Navigate to="/cambiar-password" replace />;
+    }
+    return <Navigate to={isSuperOwner ? '/admin' : '/dashboard'} replace />;
   }
 
   return children;
 };
 
-function App() {
+// Ruta para cambio de contraseña
+const PasswordRoute = ({ children }) => {
+  const { isAuthenticated, loading, debeCambiarPassword } = useAuth();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Solo permitir acceso si debe cambiar contraseña o si quiere cambiarla voluntariamente
+  return children;
+};
+
+// App Routes
+const AppRoutes = () => {
   return (
     <Routes>
       {/* Rutas públicas */}
@@ -97,10 +114,22 @@ function App() {
           </PublicRoute>
         }
       />
+      <Route path="/verificar" element={<Verificar />} />
+      <Route path="/verificar/:token" element={<Verificar />} />
 
-      {/* Rutas protegidas */}
+      {/* Cambiar contraseña */}
       <Route
-        path="/dashboard/*"
+        path="/cambiar-password"
+        element={
+          <PasswordRoute>
+            <CambiarPassword />
+          </PasswordRoute>
+        }
+      />
+
+      {/* Dashboard de usuario */}
+      <Route
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
@@ -108,7 +137,25 @@ function App() {
         }
       />
 
-      {/* Rutas de admin */}
+      {/* Gestión de usuarios (KeyMaster) */}
+      <Route
+        path="/usuarios"
+        element={
+          <ProtectedRoute>
+            <Usuarios />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Panel de administración (Super Owner) */}
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
       <Route
         path="/admin/*"
         element={
@@ -118,23 +165,55 @@ function App() {
         }
       />
 
-      {/* 404 */}
+      {/* Rutas placeholder para futuras páginas */}
       <Route
-        path="*"
+        path="/leads"
         element={
-          <div className="min-h-screen flex items-center justify-center bg-slate-50">
-            <div className="text-center">
-              <h1 className="text-6xl font-display font-bold text-violet-600 mb-4">404</h1>
-              <p className="text-xl text-slate-600 mb-6">Página no encontrada</p>
-              <a href="/" className="btn btn-primary">
-                Volver al inicio
-              </a>
-            </div>
-          </div>
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
         }
       />
+      <Route
+        path="/reportes"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/configuracion"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/configuracion/*"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 404 - Redirigir a home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
-}
+};
+
+// Main App
+const App = () => {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+};
 
 export default App;

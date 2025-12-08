@@ -316,11 +316,11 @@ const HowItWorks = () => {
 // Features Section
 const Features = () => {
   const features = [
-    { icon: '📊', title: 'Dashboard Inteligente', desc: 'Métricas en tiempo real con gráficos. Ve tu embudo de conversión de un vistazo.', color: 'violet' },
+    { icon: '📊', title: 'Dashboard Inteligente', desc: 'Métricas en tiempo real con gráficos estilo Spotify. Ve tu embudo de conversión de un vistazo.', color: 'violet' },
     { icon: '✅', title: 'Detección de Duplicados', desc: 'Algoritmo que detecta leads duplicados automáticamente para mantener tu base de datos limpia.', color: 'emerald' },
-    { icon: '📝', title: 'Formularios Web', desc: 'Crea formularios personalizados y pegalos en tu sitio con un simple código.', color: 'amber' },
+    { icon: '📝', title: 'Formularios Web', desc: 'Crea formularios personalizados y embébelos en tu sitio con un simple código.', color: 'amber' },
     { icon: '📧', title: 'Emails Automáticos', desc: 'Notificaciones a tu equipo cuando llegan nuevos leads. Nunca pierdas una oportunidad.', color: 'rose' },
-    { icon: '📥', title: 'Importación CSV', desc: 'Migra tus datos existentes con facilidad.', color: 'blue' },
+    { icon: '📥', title: 'Importación CSV', desc: 'Migra tus datos existentes con facilidad. Soporta Excel, CSV y más formatos.', color: 'blue' },
     { icon: '👥', title: 'Roles y Permisos', desc: 'KeyMaster, Encargados, Asistentes y más. Cada rol ve solo lo que necesita.', color: 'teal' },
   ];
 

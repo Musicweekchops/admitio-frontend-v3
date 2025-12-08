@@ -1,108 +1,147 @@
-# Admitio Frontend v3.0
+# 🎓 Admitio Frontend v3
 
-Frontend completo para Admitio - Sistema de Gestión de Admisiones.
+Sistema de Gestión de Admisiones - Frontend React + Vite
 
-## 🚀 Características
-
-- **Landing Page** - Página de inicio con todas las secciones
-- **Login** - Inicio de sesión para usuarios y administradores
-- **Signup** - Registro de nuevas instituciones
-- **Dashboard** - Panel de control para usuarios
-- **Admin Dashboard** - Panel de administración (Super Owner)
-
-## 📦 Stack Tecnológico
-
-- React 18
-- React Router 6
-- Tailwind CSS 3
-- Vite 5
-- Lucide React (iconos)
-
-## 🛠️ Desarrollo Local
+## 🚀 Instalación Local
 
 ```bash
 # Instalar dependencias
 npm install
 
-# Iniciar servidor de desarrollo
-npm run dev
+# Copiar variables de entorno
+cp .env.example .env
 
-# Build para producción
-npm run build
+# Editar .env con la URL de tu backend
+# VITE_API_URL=http://localhost:3000
+
+# Iniciar en desarrollo
+npm run dev
 ```
 
 ## 🌐 Deploy en Render
 
-### Opción 1: Static Site (Recomendado)
+### 1. Subir a GitHub
 
-1. Crear nuevo **Static Site** en Render
-2. Conectar tu repositorio de GitHub
+```bash
+git init
+git add .
+git commit -m "Admitio Frontend v3"
+git remote add origin https://github.com/TU-USUARIO/admitio-frontend.git
+git push -u origin main
+```
+
+### 2. Crear Static Site en Render
+
+1. Dashboard → **New +** → **Static Site**
+2. Conectar repositorio
 3. Configurar:
-   - **Build Command:** `npm install && npm run build`
-   - **Publish Directory:** `dist`
-4. Agregar variable de entorno:
-   - `VITE_API_URL` = `https://admitio-api.onrender.com`
-5. Deploy
 
-### Opción 2: Desde el ZIP
+| Campo | Valor |
+|-------|-------|
+| Name | `admitio-frontend` |
+| Branch | `main` |
+| Build Command | `npm install && npm run build` |
+| Publish Directory | `dist` |
 
-1. Descomprimir el ZIP
-2. Subir a GitHub
-3. Seguir los pasos de Opción 1
+### 3. Variables de Entorno
 
-## 🔧 Variables de Entorno
+| Key | Value |
+|-----|-------|
+| `VITE_API_URL` | `https://tu-backend.onrender.com` |
 
-| Variable | Descripción | Ejemplo |
-|----------|-------------|---------|
-| `VITE_API_URL` | URL del backend | `https://admitio-api.onrender.com` |
+### 4. Configurar CORS en Backend
 
-## 📁 Estructura del Proyecto
+Asegúrate de que el backend tenga esta variable:
+```
+CORS_ORIGINS=https://tu-frontend.onrender.com
+```
+
+## 📁 Estructura
 
 ```
 src/
-├── main.jsx           # Entry point
-├── App.jsx            # Rutas y layout
-├── index.css          # Estilos globales + Tailwind
+├── App.jsx              # Rutas y providers
+├── main.jsx             # Entry point
+├── index.css            # Estilos Tailwind
 ├── context/
-│   └── AuthContext.jsx    # Estado de autenticación
-├── services/
-│   └── api.js             # Llamadas a la API
+│   └── AuthContext.jsx  # Estado de autenticación
 ├── pages/
-│   ├── Landing.jsx        # Página de inicio
-│   ├── Login.jsx          # Login
-│   ├── Signup.jsx         # Registro
-│   ├── Dashboard.jsx      # Panel usuario
-│   └── AdminDashboard.jsx # Panel admin
-└── components/           # (futuro)
+│   ├── Landing.jsx      # Página de inicio
+│   ├── Login.jsx        # Login usuarios/admin
+│   ├── Signup.jsx       # Registro de instituciones
+│   ├── Verificar.jsx    # Verificación de cuenta
+│   ├── CambiarPassword.jsx # Cambio de contraseña
+│   ├── Dashboard.jsx    # Dashboard de usuario
+│   ├── Usuarios.jsx     # Gestión de usuarios (KeyMaster)
+│   └── AdminDashboard.jsx # Panel Super Owner
+└── services/
+    └── api.js           # Cliente API
 ```
 
-## 🎨 Diseño
+## 🔐 Flujos de Autenticación
 
-- **Tipografías:** Fraunces (display) + Outfit (body)
-- **Colores:** Paleta Violet con acentos Emerald y Amber
-- **Estilo:** Moderno, con animaciones y glassmorphism
+### Usuario Normal
+1. Login con código de institución + email + password
+2. Si tiene password temporal → Redirige a /cambiar-password
+3. Dashboard con leads y estadísticas
 
-## 🔐 Autenticación
+### Super Owner
+1. Login desde pestaña "Administrador"
+2. Panel con todas las instituciones
+3. Puede impersonar usuarios (ver como KeyMaster)
 
-El sistema soporta dos tipos de login:
+### Registro de Institución
+1. Signup → Ingresa datos de institución + KeyMaster
+2. Recibe email de verificación
+3. Click en enlace → Cuenta activa
+4. Login con credenciales
 
-1. **Usuario normal** - Requiere código de institución + email + password
-2. **Administrador (Super Owner)** - Solo email + password
+## 🔗 Conexión con Backend
 
-## 📱 Responsive
+El frontend se conecta al backend mediante el servicio `api.js`:
 
-Todo el frontend es completamente responsive, optimizado para:
-- Desktop (1024px+)
-- Tablet (768px - 1023px)
-- Mobile (< 768px)
+```javascript
+// Ejemplo de uso
+import { authAPI, leadsAPI } from './services/api';
 
-## 🚀 Próximos Pasos
+// Login
+await authAPI.login('mi-institucion', 'email@test.com', 'password');
 
-1. Conectar formularios con la API real
-2. Implementar gestión completa de leads
-3. Agregar reportes y gráficos
-4. Implementar notificaciones en tiempo real
+// Obtener leads
+const { leads } = await leadsAPI.list();
 
----
+// Crear lead
+await leadsAPI.create({ nombre: 'Juan', email: 'juan@test.com', telefono: '123456' });
+```
 
-© 2024 Admitio - Hecho con 💜 en Chile
+## 📱 Páginas
+
+| Ruta | Página | Acceso |
+|------|--------|--------|
+| `/` | Landing | Público |
+| `/login` | Login | Público |
+| `/signup` | Registro | Público |
+| `/verificar/:token` | Verificar cuenta | Público |
+| `/cambiar-password` | Cambiar contraseña | Autenticado |
+| `/dashboard` | Dashboard usuario | Autenticado |
+| `/usuarios` | Gestión usuarios | KeyMaster |
+| `/admin` | Panel admin | Super Owner |
+
+## 🛠️ Scripts
+
+```bash
+npm run dev      # Desarrollo
+npm run build    # Build producción
+npm run preview  # Preview del build
+```
+
+## 📦 Dependencias
+
+- React 18
+- React Router DOM
+- Tailwind CSS
+- Lucide React (iconos)
+
+## 📝 Licencia
+
+Propiedad de MWC Estudio - Todos los derechos reservados

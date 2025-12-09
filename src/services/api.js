@@ -308,6 +308,10 @@ export const signupAPI = {
     });
   },
 
+  async checkSlug(slug) {
+    return fetchAPI(`/api/signup/check-slug?slug=${encodeURIComponent(slug)}`);
+  },
+
   async verify(token) {
     return fetchAPI(`/api/signup/verificar/${token}`);
   },

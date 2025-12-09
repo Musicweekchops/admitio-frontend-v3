@@ -320,6 +320,29 @@ export const signupAPI = {
   },
 };
 
+// API de Notificaciones
+export const notificacionesAPI = {
+  async list() {
+    return fetchAPI('/api/notificaciones');
+  },
+
+  async marcarLeida(id) {
+    return fetchAPI(`/api/notificaciones/${id}/leer`, {
+      method: 'PUT',
+    });
+  },
+
+  async marcarTodasLeidas() {
+    return fetchAPI('/api/notificaciones/leer-todas', {
+      method: 'PUT',
+    });
+  },
+
+  async count() {
+    return fetchAPI('/api/notificaciones/count');
+  },
+};
+
 // Health check
 export const healthCheck = async () => {
   try {
@@ -336,6 +359,7 @@ export default {
   usuariosAPI,
   carrerasAPI,
   mediosAPI,
+  notificacionesAPI,
   adminAPI,
   signupAPI,
   healthCheck,

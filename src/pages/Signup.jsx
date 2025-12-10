@@ -102,13 +102,13 @@ const Signup = () => {
     setError('');
 
     try {
-      await signupAPI.register({
-        nombre: formData.nombre,
-        slug: formData.slug,
-        keymaster_nombre: formData.keymaster_nombre,
-        keymaster_email: formData.keymaster_email,
-        password: formData.password,
-      });
+     await signupAPI.register({
+  nombreInstitucion: formData.nombre,
+  slug: formData.slug,
+  nombreKeymaster: formData.keymaster_nombre,
+  emailKeymaster: formData.keymaster_email,
+  password: formData.password,
+});
       
       setSuccess(true);
     } catch (err) {

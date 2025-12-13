@@ -133,7 +133,7 @@ const Hero = () => (
       <div className="animate-slide-in-left">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-100 to-violet-50 border border-violet-200 rounded-full text-sm font-semibold text-violet-700 mb-6">
           <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-          Nuevo: Reportes con IA
+          Próximamente: Reportes con IA
         </div>
 
         <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
@@ -378,15 +378,15 @@ const Pricing = () => {
     {
       name: 'Profesional',
       tagline: 'Para instituciones en crecimiento',
-      price: '$.990',
-      features: ['15 usuarios', '2,000 leads activos', '10 formularios web', '2,000 emails/mes', 'Reportes avanzados', 'Logo personalizado'],
+      price: '$119.990',
+      features: ['15 usuarios', '1,500 leads activos', '10 formularios web', '10,000 emails/mes', 'Reportes avanzados', '5GB almacenamiento'],
       featured: true,
     },
     {
       name: 'Institución',
       tagline: 'Para grandes equipos',
-      price: '$99.990',
-      features: ['50 usuarios', '10,000 leads activos', 'Formularios ilimitados', '10,000 emails/mes', 'API completa', 'Soporte prioritario'],
+      price: '$249.990',
+      features: ['50 usuarios', '5,000 leads activos', '30 formularios web', '30,000 emails/mes', 'Reportes avanzados', '20GB almacenamiento'],
       featured: false,
     },
   ];
@@ -408,7 +408,7 @@ const Pricing = () => {
             Planes para cada institución
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Comienza gratis y escala según tus necesidades. Sin compromisos, cancela cuando quieras.
+            Comienza gratis y escala según tus necesidades. Crecemos junto contigo.
           </p>
         </div>
 
